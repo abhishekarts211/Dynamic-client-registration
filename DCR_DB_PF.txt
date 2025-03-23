@@ -56,6 +56,34 @@ jdbc:postgresql://<host>:<port>/<database>
 
 E.g. JDBC URL: jdbc:postgresql://localhost:5432/postgres
 
+###############################################################################################################################################
+
+To update the Internal IP address of the machine instead of local host in JDBC URL of Postgresql DB connection
+
+Follow the below steps:
+
+i)Update your pg_hba.conf file to allow connections from the IP address 10.*.*.* (the PingFederate admin and engine node).
+
+Edit pg_hba.conf on your PostgreSQL server:
+
+Open the pg_hba.conf file, typically found in C:\Program Files\PostgreSQL\17\data
+
+Add a new line to allow connections
+
+Example entry:
+# Allow connections from your internal network:
+host    all             all             <Internal IP address of PF admin Node(Where Postgresql is installed)>/32          scram-sha-256
+host    all             all             <Internal IP address of PF Engine Node>/32          scram-sha-256
+This will allow the machine at 10.*.*.* to connect to any database (all) using any user (all) with password authentication (scram-sha-256).
+
+ii)Reload or restart PostgreSQL for the changes to take effect:
+
+iii)Verify the connection:
+After making this change, try reconnecting PingFederate to PostgreSQL with the same JDBC URL:
+jdbc:postgresql://<Internal IP address of PF admin node>:5432/postgres
+
+###############################################################################################################################################
+
 Driver Class Name:
 For the PostgreSQL JDBC driver, the correct class name is:
 
