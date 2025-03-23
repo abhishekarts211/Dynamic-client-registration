@@ -1,0 +1,115 @@
+Dynamic Client Registration in PingFederate::
+
+Dynamic Client Registration (DCR) is a feature of PingFederate that allows developers to dynamically register OAuth clients with the authorization server, instead of manually registering each client through the admin interface. This process adheres to the OAuth 2.0 Dynamic Client Registration Protocol, which defines how an OAuth client can automatically register itself with an OAuth 2.0 authorization server.
+
+How It Works:
+
+Dynamic Client Registration Endpoint: PingFederate exposes a Dynamic Client Registration endpoint, which is a RESTful API that allows developers to register OAuth clients programmatically. This endpoint allows a client (i.e., a web application, mobile app, or service) to request the creation of an OAuth 2.0 client by sending an HTTP request.
+
+Registration Request: The client sends a registration request to the endpoint, providing various metadata about the client, such as:
+
+Client Name (e.g., the name of the app or service)
+
+Redirect URIs (URLs that the OAuth server can redirect to after authorization)
+
+Client Type (e.g., public or confidential)
+
+Grant Types (e.g., authorization code, implicit, etc.)
+
+Scopes (permissions the client is requesting)
+
+Validation and Response: When the server receives the registration request, PingFederate validates the provided metadata. If the request is valid, PingFederate registers the client, and the response includes:
+
+A Client ID: A unique identifier for the registered client.
+
+Client Secret (optional for certain client types): A secret key used to authenticate the client when requesting access tokens.
+
+The server may also return other metadata about the client that was registered, like allowed grant types or redirect URIs.
+
+Dynamic Updates: In addition to registering new clients, DCR also allows for updating and modifying the registration data of existing clients dynamically, which is helpful if a client’s configuration changes over time.
+
+
+Why It Is Important
+Dynamic Client Registration is important for several reasons:
+
+Automation:
+
+DCR automates the client registration process, saving administrators and developers time. Instead of manually registering each client through a graphical user interface (GUI), clients can automatically register themselves through an API.
+
+It reduces human error and allows for more rapid deployment, especially in large or distributed systems.
+
+Flexibility and Scalability:
+
+It supports a scalable architecture where clients can dynamically register with the authorization server, making it easier to manage a large number of client applications.
+
+Ideal for environments with many apps or microservices that need to register OAuth clients on the fly.
+
+Security:
+
+Since client metadata and registration details can be validated and automatically enforced, DCR helps ensure that only valid and properly configured clients are registered, which reduces the risk of misconfigurations or unauthorized access.
+
+The ability to automatically generate client secrets (or even manage client secret rotation) enhances the security of the OAuth process.
+
+Compliance with OAuth Standards:
+
+DCR ensures compliance with the OAuth 2.0 Dynamic Client Registration standard, making it easier for organizations to implement OAuth authentication and authorization in line with industry best practices and open standards.
+
+Self-Service Model:
+
+Developers can manage and register their own clients without needing to involve an administrator, making the process faster and more efficient for development teams.
+
+Adaptability:
+
+DCR allows OAuth clients to register themselves with minimal manual intervention. This is particularly useful in environments with many moving parts, such as microservices, where new clients may need to register themselves dynamically as part of the application's lifecycle.
+
+
+=================================================================================================================================================================
+
+Pre-requisites for DCR in PF:
+
+i) Enable DCR 
+
+*******************************************************************************************************************
+Note: This runtime endpoint is only active when the dynamic registration client is enabled and configured.
+
+Important:
+As dynamic client registration can expose your server to unwanted client registrations, we recommend protecting PingFederate by requiring an initial access token, configuring one or more client registration policies, and protecting access to the dynamic client registration endpoint.
+
+You can configure access token requirement and client registration policies using the System → OAuth Settings → Client Settings window. To further protect against unauthorized access to the dynamic client registration endpoint, consider using PingAccess or your choice of web access management solution to do so.
+
+Note: This endpoint accepts only the HTTP POST method.
+
+Note:
+Dynamic client registration requires OAuth client storage in an external datastore, such as a database or LDAP directory. If you have not yet switched from the default on-disk client storage to an external datastore, see OAuth client datastores. You can continue with the rest of the configuration; however, dynamic client registration remains inactive until an external client storage is defined.
+
+***********************************************************************************************************************
+
+
+ii) Configure external databases for client storage
+
+
+iii) Seeing up of Client credential connection for Access Token
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
