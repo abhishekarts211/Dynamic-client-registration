@@ -88,7 +88,7 @@ Dynamic client registration requires OAuth client storage in an external datasto
 ii) Configure external databases for client storage
 
 
-iii) Seeing up of Client credential connection for Access Token
+iii) Setting up of Client credential connection for Access Token
 
 
 
