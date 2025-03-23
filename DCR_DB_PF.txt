@@ -1,0 +1,180 @@
+Configuring external databases for client storage::
+
+
+Adding PostgreSQL DB for OAuth client storage
+==============================================
+
+Install Postgresql
+https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+
+Set the path
+C:\Program Files\PostgreSQL\17\bin
+
+
+Connecting to PostgreSQL
+Once installed and running, you can connect to PostgreSQL using the psql command-line tool.
+
+In psql, connect as the postgres user:
+
+psql -U postgres -d postgres
+
+The command psql -U postgres -d postgres is used to connect to a PostgreSQL database using the psql command-line client. Here's what each part of the command means:
+
+psql: This is the command-line interface for interacting with a PostgreSQL database. It allows you to run SQL queries, manage databases, and perform administrative tasks.
+
+-U postgres: This option specifies the username to use for the connection. In this case, it’s postgres, which is the default superuser account for PostgreSQL. This user has administrative privileges on the database.
+
+-d postgres: This option specifies the database to connect to. In this case, it’s the postgres database, which is a default database created when you install PostgreSQL. The postgres database is often used as a template or system database, but you can replace it with any other database name that you want to connect to.
+
+postgres=# SHOW port;
+ port
+------
+ 5432
+(1 row)
+
+
+==================================================================================================================================================
+
+
+Connecting PostgreSQL to PingFederate
+
+Download the Jar file
+https://jdbc.postgresql.org/download/
+
+
+Deploy the Jar file
+C:\Program Files\Ping Identity\pingfederate-12.1.0\pingfederate\server\default\lib
+
+
+To connect PostgreSQL with PingFederate, you need to form the JDBC URL properly. The JDBC URL for PostgreSQL follows this format:
+
+jdbc:postgresql://<host>:<port>/<database>
+
+<host> is the address of the PostgreSQL server (for a local installation, this would typically be localhost).
+<port> is the port PostgreSQL is listening on (default is 5432).
+<database> is the name of the database you want to connect to.
+
+E.g. JDBC URL: jdbc:postgresql://localhost:5432/postgres
+
+Driver Class Name:
+For the PostgreSQL JDBC driver, the correct class name is:
+
+org.postgresql.Driver
+
+This is the class that PingFederate or any other application would use to connect to the PostgreSQL database.
+
+
+
+=================================================================================================================================================
+
+
+
+****************************************************************************************************************************************************************
+Caution:
+
+PingFederate does not migrate client records from one storage medium to another. You must recreate your clients after updating the client storage configuration. If you need only a few clients, you can recreate them using the administrative console.
+
+If you need a large number of clients, use the administrative API to retrieve your client records before updating the client storage. Update the client storage configuration and recreate your clients using the administrative API based on the retrieved records.
+*****************************************************************************************************************************************************************
+
+================================================================================================================================================================
+
+i) Edit the <pf_install>/pingfederate/server/default/conf/service-points.conf file.
+
+Locate the client.manager service point.
+
+# Service for storing OAuth client configuration.
+# Supported classes are
+#   org.sourceid.oauth20.domain.ClientManagerXmlFileImpl  : Use this service-point for an XML implementation.
+#   org.sourceid.oauth20.domain.ClientManagerJdbcImpl     : Use this service-point for a Jdbc implementation.
+#   org.sourceid.oauth20.domain.ClientManagerLdapImpl     : Use this service-point for an LDAP implementation.
+#   org.sourceid.oauth20.domain.ClientManagerDynamoDBImpl : Use this service-point for a DynamoDB implementation
+#   org.sourceid.oauth20.domain.ClientManagerGenericImpl  : Use this service-point if you have specified a custom ClientStorageManager implementation above.
+client.manager=org.sourceid.oauth20.domain.ClientManagerXmlFileImpl
+Update the value of the service point to org.sourceid.oauth20.domain.ClientManagerJdbcImpl.
+
+Save the file.
+
+
+ii) Run the table-setup scripts for your database server provided in the <pf_install>/pingfederate/server/default/conf/oauth-client-management/sql-scripts directory.
+
+
+
+****************************************************************************************************************************************
+
+Directory of C:\Program Files\Ping Identity\pingfederate-12.1.0\pingfederate\server\default\conf\oauth-client-management\sql-scripts
+
+03/11/2025  08:12 PM    <DIR>          .
+03/11/2025  08:12 PM    <DIR>          ..
+06/18/2024  10:59 PM             1,085 oauth-client-management-mysql.sql
+06/18/2024  10:59 PM               901 oauth-client-management-oracle.sql
+06/18/2024  10:59 PM               839 oauth-client-management-postgresql.sql
+06/18/2024  10:59 PM             1,114 oauth-client-management-sqlserver.sql
+03/11/2025  08:12 PM                 0 psql
+               5 File(s)          3,939 bytes
+               2 Dir(s)  72,466,669,568 bytes free
+
+C:\Program Files\Ping Identity\pingfederate-12.1.0\pingfederate\server\default\conf\oauth-client-management\sql-scripts>psql -U postgres -d postgres
+Password for user postgres:
+psql (17.4)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \i oauth-client-management-postgresql.sql
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+postgres=#
+                      ^
+postgres=# SELECT * FROM pingfederate_oauth_clients;
+ client_id | name | refresh_rolling | logo | hashed_secret | description | persistent_grant_exp_time | persistent_grant_exp_time_unit | bypass_approval_page
+-----------+------+-----------------+------+---------------+-------------+---------------------------+--------------------------------+----------------------
+(0 rows)
+
+
+
+postgres=# \l
+                                                List of databases
+   Name    |  Owner   | Encoding | Locale Provider | Collate | Ctype | Locale | ICU Rules |   Access privileges
+-----------+----------+----------+-----------------+---------+-------+--------+-----------+-----------------------
+ postgres  | postgres | UTF8     | libc            | en-US   | en-US |        |           |
+ template0 | postgres | UTF8     | libc            | en-US   | en-US |        |           | =c/postgres          +
+           |          |          |                 |         |       |        |           | postgres=CTc/postgres
+ template1 | postgres | UTF8     | libc            | en-US   | en-US |        |           | =c/postgres          +
+           |          |          |                 |         |       |        |           | postgres=CTc/postgres
+(3 rows)
+
+
+*********************************************************************************************************************************
+
+
+iii) Edit the <pf_install>/pingfederate/server/default/data/config-store/org.sourceid.oauth20.domain.ClientManagerJdbcImpl.xml file.
+
+For a clustered PingFederate environment, edit this file on the administrative console node first, and then replicate to other engine nodes using System > Server > Cluster Management
+
+Replace the <c:item name="PingFederateDSJNDIName"/> element value with the system ID of your datastore connection and save the file.
+
+Example:
+If the system ID is JDBC-123456789ABCDEF123456789ABCDEF123456A0AC, update the org.sourceid.oauth20.domain.ClientManagerJdbcImpl.xml file as follows.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<c:config xmlns:c="http://www.sourceid.org/2004/05/config">
+    <c:item name="PingFederateDSJNDIName">JDBC-123456789ABCDEF123456789ABCDEF123456A0AC</c:item>
+</c:config>
+
+
+iv) Start or restart PingFederate.
+
+
+==============================================================================================================================================================
+
+
+
+
+
+
+
+
