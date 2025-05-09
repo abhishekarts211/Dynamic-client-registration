@@ -1,0 +1,66 @@
+Dynamic client registration (Example 2)
+
+A developer wants to register a client that supports the authorization code flow, refresh tokens, one redirection URI, one profile scope, and HTTP Basic as the client authentication method. In this example, PingFederate is configured to require an initial access token. However, the profile scope is restricted. 
+
+
+Request
+POST /as/clients.oauth2 HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImsxIn0.eyJzY29wZSI6WyJkQ1IiXSwiY2xpZW50X2lkX25hbWUiOiJwYXJ0bmVyRGV2X0FjbWUiLCJhZ2lkIjoiMG44NHV6Nm1mZFJWbzNIWU9VODlrc3FxMTVNR3hxUFMiLCJVc2VybmFtZSI6Ikl2YW4gTW9rIiwiT3JnTmFtZSI6IkFDTUUgRGV2IiwiZXhwIjoxNTA4MzY3MDcyfQ.XfKd8--CHtcQ79Wefz2Sw5GOB5LfV9mWJ0n3vzJ93Ie7wbEAkalIFg53J-9e7s59MjA1igx6ybflGMQ9QAjYobs-jM24arJZZgopEXvcx6IQpyU8U4AMTJ7tr9Lmody8P0QZOKcUDBTT5egv9vr5NuXCtUBfVPhGZ-3p5g5mwrnGHBfqZOAsg7U4hKq8cauKQtVyBBV9iIZNG5Q3ovnxBTclKII9HX-oDhmilbmiga4319YSFfX5-U3li9XPeN3JZB2u**********************************************************
+Host: www.example.com
+
+{
+  "client_name":"Example Org Sample Two",
+  "redirect_uris":[
+    "https://example.org/app2"
+  ],
+  "scope":"profile",
+  "grant_types":[
+    "authorization_code",
+    "refresh_token"
+  ]
+}
+
+
+
+201 created
+Response
+
+{
+    "client_id": "dc-c76r63ayobbeahb62q03xaun4",
+    "client_name": "Example 2",
+    "redirect_uris": [
+        "https://example.org/app2"
+    ],
+    "token_endpoint_auth_method": "client_secret_basic",
+    "id_token_signed_response_alg": "RS256",
+    "grant_types": [
+        "refresh_token",
+        "authorization_code"
+    ],
+    "client_secret": "hloTF6Q716C1SeSMIOCvfb",
+    "client_secret_expires_at": 0,
+    "scope": "profile",
+    "authorization_details_types": [],
+    "subject_type": "public",
+    "client_description": null,
+    "dpop_bound_access_tokens": false,
+    "validate_using_all_eligible_atms": false,
+    "default_access_token_manager_id": "testATM",
+    "restrict_to_default_access_token_manager": true,
+    "refresh_token_rolling_policy": "server_default",
+    "refresh_token_rolling_interval_type": "SERVER_DEFAULT",
+    "persistent_grant_expiration_type": "server_default",
+    "persistent_grant_idle_timeout_type": "server_default",
+    "policy_group_id": "oidcpftest",
+    "grant_access_session_revocation_api": false,
+    "grant_access_session_management_api": false,
+    "pingaccess_logout_capable": false,
+    "device_flow_setting_type": "SERVER_DEFAULT",
+    "require_proof_key_for_code_exchange": false,
+    "refresh_token_rolling_grace_period_type": "SERVER_DEFAULT",
+    "require_jwt_secured_authorization_response_mode": false,
+    "require_offline_access_scope_to_issue_refresh_tokens": "SERVER_DEFAULT",
+    "offline_access_require_consent_prompt": "SERVER_DEFAULT"
+}
