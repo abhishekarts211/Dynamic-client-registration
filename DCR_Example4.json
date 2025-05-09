@@ -1,0 +1,45 @@
+Dynamic client registration (Example 4)
+ 
+
+A developer attempts to dynamically register a public client that supports the authorization code flow with PKCE, uses refresh tokens, has a single redirect URI, and requires the restricted scope dev_reg. The client uses no client secret (token_endpoint_auth_method: none), as is typical for public clients like mobile or JavaScript applications.
+
+PingFederate is configured to:
+
+Require an initial access token for all dynamic client registrations.
+
+Enforce scope restrictions, where certain scopes (such as dev_reg) are required for specific clients and are marked as restricted.
+
+The developer sends a registration request with an incorrect scope in the request body, such as a scope that does not include the required restricted scope dev_reg. Since the dev_reg scope is a mandatory scope for the registration, the request will fail with an error indicating the incorrect scope.
+
+
+Request
+
+POST /as/clients.oauth2 HTTP/1.1
+Host: www.example.com
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer <initial-access-token>
+
+{
+  "client_name": "Example 4",
+  "redirect_uris": [
+    "https://example.org/app4"
+  ],
+  "scope": "dev_regs",
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "token_endpoint_auth_method": "none"
+}
+
+
+Response 400 Bad request
+
+{
+    "error": "invalid_client_metadata",
+    "error_description": "Undefined scope 'dev_regs'.\nThe requested scope is invalid.\n"
+}
+
+
+
