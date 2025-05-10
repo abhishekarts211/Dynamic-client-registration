@@ -1,7 +1,7 @@
 Dynamic client registration (Example 3)
 
 
-A developer wants to register a client that supports the authorization code flow, refresh tokens, one redirection URI, dev_reg an exclusive scope, and HTTP Basic as the client authentication method. In this example, PingFederate is configured to require an initial access token. However, the dev_reg an exclusive scope is restricted. 
+A developer wants to register a client that supports the authorization code flow, refresh tokens, one redirection URI, dev_reg an exclusive scope, and HTTP Basic as the client authentication method. In this example, PingFederate is configured to require an initial access token.
 
 
 Request
